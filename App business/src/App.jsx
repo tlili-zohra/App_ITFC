@@ -1,4 +1,4 @@
-import { Route, Router, Routes } from "react-router-dom";
+import { Route, Router, Routes, useLocation, Outlet } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import AboutSection from "./Compenents/AboutSection";
 import ServicesSection from "./Compenents/ServicesSection";
@@ -16,6 +16,14 @@ import { Login } from "./pages/Login";
 import Register from "./pages/Register";
 import Payment from "./pages/Payment";
 import PrivateRoute from "./private/PrivateRoute";
+import AdminLogin from "./admin/adminlogin";
+import Dashbordadmin from "./admin/Dashbordadmin";
+import { AuthProvider } from "./admin/context/AuthContext";
+import ProtectedRoute from "./admin/context/ProtectedRoute";
+import VideoManagement from "./admin/Components/VideoManagement";
+import PaymentVideo from "./admin/Components/PaymentVideo";
+import UserFolders from "./admin/Components/UserFolders";
+import DashboardHome from "./admin/Components/DashboardHome";
 
 const App = () => {
   const blog = [
@@ -279,10 +287,12 @@ const App = () => {
       }
     }
   }, []);
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/adminlogin");
   return (
-    <div>
+    <AuthProvider>
       <style>{`::-webkit-scrollbar { display: none; }`}</style>
-      <Navbar />
+      {!isAdminRoute && <Navbar />}
       <Routes>
         <Route
           path="/"
@@ -310,10 +320,30 @@ const App = () => {
           path="/payment/:videoId"
           element={<Payment videos={videosFormation} />}
         />
+
+        {/* المسارات المحمية تحت حماية ProtectedRoute */}
+        <Route path="/adminlogin" element={<AdminLogin />} />
+        <Route
+          path="/adminlogin/dashbordadmin"
+          element={
+            <ProtectedRoute>
+              <Dashbordadmin />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<DashboardHome />} />
+          <Route path="home" element={<DashboardHome />} />
+          <Route path="userfolders" element={<UserFolders />} />
+          <Route path="paymentvideo" element={<PaymentVideo />} />
+          <Route path="videomanagement" element={<VideoManagement />} />
+          <Route path="blogmanager" element={<blogmanager />} />
+        </Route>
       </Routes>
-      {/* Footer section  */}
-      <Footer titles={lastThree.map((block) => block.title)} />
-    </div>
+
+      {!isAdminRoute && (
+        <Footer titles={lastThree.map((block) => block.title)} />
+      )}
+    </AuthProvider>
   );
 };
 
