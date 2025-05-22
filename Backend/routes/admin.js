@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/admin");
-const auth = require("../middleware/auth");
+//const auth = require("../middleware/auth");
 // Public login route
-router.post("/", auth, adminController.login);
+router.post("/", adminController.login);
 // Protect all routes below this line
 //router.use(auth);
 

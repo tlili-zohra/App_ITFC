@@ -35,9 +35,10 @@ const User = require("./model/user");
 });
 */
 // User routes
+//const auth = require("../middleware/auth");
 const userRoutes = require("./routes/user");
 app.use("/users", userRoutes);
-//const auth = require("../middleware/auth");
+
 // Admin routes
 const adminRoutes = require("./routes/admin");
 app.use("/adminlogin", adminRoutes);

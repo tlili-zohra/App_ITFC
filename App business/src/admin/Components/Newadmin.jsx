@@ -157,7 +157,7 @@ const Newadmin = () => {
           placeholder="Search by username or email"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded bg-white/80"
         />
       </div>
 
