@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const storedUser = localStorage.getItem("user");
+      const storedUser = localStorage.getItem("admin");
       return storedUser ? JSON.parse(storedUser) : null;
     } catch (error) {
       console.error("Error parsing user from localStorage:", error);
@@ -13,23 +13,25 @@ export function AuthProvider({ children }) {
     }
   });
 
-  // Sync localStorage if currentUser changes (optional, for robustness)
+  // Sync localStorage if currentUser changes
   useEffect(() => {
     if (currentUser) {
-      localStorage.setItem("user", JSON.stringify(currentUser));
+      localStorage.setItem("admin", JSON.stringify(currentUser));
     } else {
-      localStorage.removeItem("user");
+      localStorage.removeItem("admin");
     }
   }, [currentUser]);
 
+  // Login: set user and token
   const login = (userData) => {
     setCurrentUser(userData);
-    // localStorage is updated by useEffect
+    localStorage.setItem("admin", JSON.stringify(userData));
   };
 
+  // Logout: clear user and token
   const logout = () => {
     setCurrentUser(null);
-    // localStorage is updated by useEffect
+    localStorage.removeItem("admin");
   };
 
   return (

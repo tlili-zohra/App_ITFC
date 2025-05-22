@@ -5,7 +5,7 @@ import { AuthContext } from "./AuthContext";
 const ProtectedRoute = ({ children }) => {
   const { currentUser } = useContext(AuthContext);
 
-  if (!currentUser) {
+  if (!currentUser || !currentUser.token) {
     return <Navigate to="/adminlogin" replace />;
   }
 

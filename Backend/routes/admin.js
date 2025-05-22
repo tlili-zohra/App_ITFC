@@ -1,20 +1,23 @@
 const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/admin");
-//console.log("adminController:", adminController);
-// Admin login route
-router.post("/", adminController.login);
+const auth = require("../middleware/auth");
+// Public login route
+router.post("/", auth, adminController.login);
+// Protect all routes below this line
+//router.use(auth);
 
-// Add blog post
-router.post("/", adminController.addBlog);
+// Video routes
+router.post("/videos", adminController.addVideo);
+router.put("/videos/:id", adminController.updateVideo);
+router.delete("/videos/:id", adminController.removeVideo);
 
-// Add video
-router.post("/", adminController.addVideo);
+// Highlight event routes
+router.post("/highlightevents", adminController.addHighlightEvent);
+router.put("/highlightevents/:id", adminController.updateHighlightEvent);
+router.delete("/highlightevents/:id", adminController.removeHighlightEvent);
 
-// Add highlight event
-router.post("/", adminController.addHighlightEvent);
-
-// Get folders, filter by job title if provided
-router.get("/", adminController.getFolders);
+// Example: get folders (if needed)
+router.get("/folders", adminController.getFolders);
 
 module.exports = router;

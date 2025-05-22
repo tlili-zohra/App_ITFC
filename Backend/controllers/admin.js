@@ -4,6 +4,7 @@ const Folder = require("../model/folder");
 const Blog = require("../model/blog");
 const Video = require("../model/video");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken"); // Add this at the top with your other requires
 
 // Admin login
 exports.login = async (req, res) => {
@@ -17,9 +18,18 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid username or password" });
     }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: admin._id, username: admin.username },
+      "your_jwt_secret", // Replace with your secret key, ideally from process.env.JWT_SECRET
+      { expiresIn: "1d" }
+    );
+
     res.json({
       message: "Admin login successful",
       admin: { id: admin._id, username: admin.username, email: admin.email },
+      token, // Return the token
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -29,39 +39,83 @@ exports.login = async (req, res) => {
 // Add a blog post (with image upload support and date)
 exports.addBlog = async (req, res) => {
   try {
-    const { title, content, author } = req.body;
-    let imagePath = null;
-    if (req.file) {
-      imagePath = req.file.path;
-    }
+    const { title, content, author, date } = req.body;
+    const coverImage = req.files.cover
+      ? `/uploads/${req.files.cover[0].filename}`
+      : "";
+    const images = req.files.images
+      ? req.files.images.map((f) => `/uploads/${f.filename}`)
+      : [];
+
     const blog = new Blog({
       title,
       content,
       author,
-      image: imagePath, // Make sure your Blog model has an 'image' field
-      date: new Date(), // Add current date
+      coverImage,
+      images,
+      createdAt: date ? new Date(date) : new Date(), // <-- save date, default to now
     });
+
     await blog.save();
-    res.status(201).json({ message: "Blog post added successfully", blog });
+    res.status(201).json({ blog });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: "Failed to add blog" });
+  }
+};
+
+// Get all blogs
+exports.getBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find().sort({ createdAt: -1 });
+    res.json({ blogs });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch blogs" });
   }
 };
 
 // Update a blog post
 exports.updateBlog = async (req, res) => {
   try {
-    const { id } = req.params;
-    const updateData = { ...req.body };
-    if (req.file) {
-      updateData.image = req.file.path;
+    const blogId = req.params.id;
+    const { title, content, author, date } = req.body;
+
+    // Parse existing images/cover from form-data if present
+    let existingImages = [];
+    if (req.body.existingImages) {
+      existingImages = JSON.parse(req.body.existingImages);
     }
-    updateData.date = new Date(); // Optionally update date
-    const blog = await Blog.findByIdAndUpdate(id, updateData, { new: true });
-    if (!blog) {
-      return res.status(404).json({ error: "Blog post not found" });
+    let existingCover = req.body.existingCover || null;
+
+    // Handle new uploads
+    let coverImage = existingCover;
+    if (req.files && req.files.cover && req.files.cover.length > 0) {
+      coverImage = "/uploads/" + req.files.cover[0].filename;
     }
-    res.json({ message: "Blog post updated successfully", blog });
+
+    let images = existingImages;
+    if (req.files && req.files.images && req.files.images.length > 0) {
+      images = [
+        ...existingImages,
+        ...req.files.images.map((file) => "/uploads/" + file.filename),
+      ];
+    }
+
+    // Update the blog in the database
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        title,
+        content,
+        author,
+        coverImage,
+        images,
+        createdAt: date ? new Date(date) : new Date(),
+      },
+      { new: true }
+    );
+
+    res.json(updatedBlog);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -141,7 +195,9 @@ exports.updateHighlightEvent = async (req, res) => {
   try {
     const HighlightEvent = require("../model/highlightevent");
     const { id } = req.params;
-    const event = await HighlightEvent.findByIdAndUpdate(id, req.body, { new: true });
+    const event = await HighlightEvent.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
     if (!event) {
       return res.status(404).json({ error: "Highlight event not found" });
     }

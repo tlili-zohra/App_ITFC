@@ -28,7 +28,8 @@ export default function AdminLogin() {
 
       if (response.ok && data.admin) {
         setError("");
-        login(data.admin);
+        // login(data.admin);
+        login({ ...data.admin, token: data.token });
         navigate("/adminlogin/dashbordadmin");
       } else {
         setError(data.message || "Invalid credentials");

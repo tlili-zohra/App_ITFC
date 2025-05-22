@@ -10,7 +10,7 @@ export default function Dashbordadmin() {
   const [error, setError] = useState("");
   const [navOpen, setNavOpen] = useState(false);
   const navRef = useRef(null);
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,6 +49,7 @@ export default function Dashbordadmin() {
   }, [navOpen]);
 
   const handleLogout = () => {
+    logout();
     navigate("/adminlogin");
   };
 
@@ -123,6 +124,21 @@ export default function Dashbordadmin() {
                   >
                     <span>💳</span>
                     Payment Video
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="newadmin"
+                    className={({ isActive }) =>
+                      `flex items-center gap-2 font-medium transition ${
+                        isActive
+                          ? "text-yellow-400 bg-blue-900 rounded px-2 py-1"
+                          : "text-yellow-200 hover:text-yellow-400"
+                      }`
+                    }
+                  >
+                    <span>👤👤</span>
+                    New Admin
                   </NavLink>
                 </li>
                 <li>

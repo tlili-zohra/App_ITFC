@@ -1,8 +1,8 @@
 import { Route, Router, Routes, useLocation, Outlet } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import AboutSection from "./Compenents/AboutSection";
-import ServicesSection from "./Compenents/ServicesSection";
-import BlogSection from "./Compenents/BlogSection";
+//import AboutSection from "./Compenents/AboutSection";
+//import ServicesSection from "./Compenents/ServicesSection";
+//import BlogSection from "./Compenents/BlogSection";
 import BlogPage from "./pages/BlogPage";
 import Navbar from "./Compenents/Navbar";
 import { useEffect } from "react";
@@ -15,7 +15,7 @@ import Audit from "./pages/Services/Audit";
 import { Login } from "./pages/Login";
 import Register from "./pages/Register";
 import Payment from "./pages/Payment";
-import PrivateRoute from "./private/PrivateRoute";
+//import PrivateRoute from "./private/PrivateRoute";
 import AdminLogin from "./admin/adminlogin";
 import Dashbordadmin from "./admin/Dashbordadmin";
 import { AuthProvider } from "./admin/context/AuthContext";
@@ -24,6 +24,8 @@ import VideoManagement from "./admin/Components/VideoManagement";
 import PaymentVideo from "./admin/Components/PaymentVideo";
 import UserFolders from "./admin/Components/UserFolders";
 import DashboardHome from "./admin/Components/DashboardHome";
+import Newadmin from "./admin/Components/newadmin";
+import Blogsmanger from "./admin/Components/blogsmanger";
 
 const App = () => {
   const blog = [
@@ -335,8 +337,9 @@ const App = () => {
           <Route path="home" element={<DashboardHome />} />
           <Route path="userfolders" element={<UserFolders />} />
           <Route path="paymentvideo" element={<PaymentVideo />} />
+          <Route path="newadmin" element={<Newadmin />} />
           <Route path="videomanagement" element={<VideoManagement />} />
-          <Route path="blogmanager" element={<blogmanager />} />
+          <Route path="blogmanager" element={<Blogsmanger />} />
         </Route>
       </Routes>
 
